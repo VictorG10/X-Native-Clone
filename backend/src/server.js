@@ -17,8 +17,13 @@ app.get("/", (req, res) => {
   res.send("<h1>X Native Clone</h1>");
 });
 
-connectDB().then(() =>
-  app.listen(PORT, () => {
-    console.log(`Server is running on Port:${PORT}`);
-  })
-);
+connectDB()
+  .then(() =>
+    app.listen(PORT, () => {
+      console.log(`Server is running on Port:${PORT}`);
+    })
+  )
+  .catch((err) => {
+    console.error("Failed to connect to DB. Exiting...", err);
+    process.exit(1);
+  });
