@@ -8,6 +8,8 @@ import { clerkMiddleware } from "@clerk/express";
 import userRoutes from "./routes/user.route.js";
 import postRoutes from "./routes/post.route.js";
 import commentRoutes from "./routes/comment.route.js";
+import notificationRoutes from "./routes/notification.route.js";
+import { arcjetMiddleware } from "./middlewares/arcjet.middleware.js";
 
 const PORT = ENV.PORT || 8081;
 
@@ -19,6 +21,7 @@ app.use(logger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(clerkMiddleware());
+app.use(arcjetMiddleware);
 
 // routes
 app.get("/", (req, res) => {
@@ -28,6 +31,7 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
