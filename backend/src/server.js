@@ -39,12 +39,16 @@ app.use((err, req, res, next) => {
 });
 
 connectDB()
-  .then(() =>
-    app.listen(PORT, () => {
-      console.log(`Server is running on Port:${PORT}`);
-    })
+  .then(
+    () =>
+      ENV.NODE_ENV !== "production" &&
+      app.listen(PORT, () => {
+        console.log(`Server is running on Port:${PORT}`);
+      })
   )
   .catch((err) => {
     console.error("Failed to connect to DB. Exiting...", err);
     process.exit(1);
   });
+
+export default app;
