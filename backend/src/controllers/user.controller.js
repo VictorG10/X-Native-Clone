@@ -60,6 +60,7 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
 
 export const followUser = asyncHandler(async (req, res) => {
   const { userId } = getAuth(req);
+  // const { userId } = req.auth;
   const { targetUserId } = req.params;
 
   if (userId === targetUserId)
