@@ -9,8 +9,9 @@ export default function RootLayout() {
     <>
       <StatusBar />
       <ClerkProvider tokenCache={tokenCache}>
-        <Stack screenOptions={{}}>
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(tabs)" />
         </Stack>
       </ClerkProvider>
     </>
