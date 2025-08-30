@@ -25,6 +25,8 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
 export const syncUser = asyncHandler(async (req, res) => {
   const { userId } = getAuth(req);
+  console.log("Decoded Clerk userId:", userId);
+  console.log("Incoming header:", req.headers.authorization);
 
   const existingUser = await User.findOne({ clerkId: userId });
   if (existingUser) {
@@ -45,6 +47,7 @@ export const syncUser = asyncHandler(async (req, res) => {
   };
 
   const user = await User.create(userData);
+  console.log("Incoming auth header:", req.headers.authorization);
 
   res.status(201).json({ user, message: "User created successfully" });
 });

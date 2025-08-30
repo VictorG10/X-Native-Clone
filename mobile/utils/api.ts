@@ -9,28 +9,39 @@ export const createApiClient = (
 ): AxiosInstance => {
   const api = axios.create({ baseURL: API_BASE_URL });
 
-  api.interceptors.request.use(async (config) => {
-    // const token = await getToken();
-    const token = await getToken({ template: "mobile" });
+  // Attach token before each request
+  api.interceptors.request.use(
+    async (config) => {
+      try {
+        const token = await getToken();
+        console.log("Got Clerk token:", token?.slice(0, 20));
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      console.warn("No token found from Clerk!");
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        } else {
+          console.warn("⚠️ No token returned from Clerk.");
+        }
+      } catch (err) {
+        console.error("❌ Failed to fetch Clerk token:", err);
+      }
+
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
     }
-
-    return config;
-  });
+  );
 
   return api;
 };
 
+// React hook to use the API client inside components
 export const useApiClient = (): AxiosInstance => {
   const { getToken } = useAuth();
-
   return createApiClient(getToken);
 };
 
+// User endpoints
 export const userApi = {
   syncUser: (api: AxiosInstance) => api.post("/users/sync"),
   getCurrentUser: (api: AxiosInstance) => api.get("/users/me"),

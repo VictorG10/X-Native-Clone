@@ -16,11 +16,11 @@ const PORT = ENV.PORT || 8081;
 const app = express();
 
 // middlewares
+app.use(clerkMiddleware());
 app.use(cors());
 app.use(logger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(clerkMiddleware());
 app.use(arcjetMiddleware);
 
 // routes
