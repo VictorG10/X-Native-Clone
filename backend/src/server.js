@@ -26,8 +26,8 @@ app.use(clerkMiddleware());
 app.use(arcjetMiddleware);
 
 // routes
-app.get("/", (req, res) => {
-  res.json({ health: "OK" });
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
 });
 
 app.use("/api/users", userRoutes);
@@ -41,12 +41,11 @@ app.use((err, req, res, next) => {
 });
 
 connectDB()
-  .then(
-    () =>
-      ENV.NODE_ENV !== "production" &&
-      app.listen(PORT, () => {
-        console.log(`Server is running on Port:${PORT}`);
-      })
+  .then(() =>
+    // ENV.NODE_ENV !== "production" &&
+    app.listen(PORT, () => {
+      console.log(`Server is running on Port:${PORT}`);
+    })
   )
   .catch((err) => {
     console.error("Failed to connect to DB. Exiting...", err);
