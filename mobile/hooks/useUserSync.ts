@@ -8,9 +8,15 @@ export const useUserSync = () => {
   const api = useApiClient();
 
   const syncUserMutation = useMutation({
-    mutationFn: () => userApi.syncUser(api),
-    onSuccess: (response: any) =>
-      console.log("User synced successfully:", response.data.user),
+    mutationFn: async () => {
+      userApi.syncUser(api);
+      return await api.post("/users/sync");
+    },
+    onSuccess: (response: any) => {
+      console.log("✅ Full axios response:", response);
+      console.log("✅ Response data:", response.data);
+      console.log("✅ Synced user:", response.data?.user);
+    },
     onError: (error) => console.error("User sync failed:", error),
   });
 
