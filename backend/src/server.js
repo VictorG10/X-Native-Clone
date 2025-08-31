@@ -10,10 +10,12 @@ import postRoutes from "./routes/post.route.js";
 import commentRoutes from "./routes/comment.route.js";
 import notificationRoutes from "./routes/notification.route.js";
 import { arcjetMiddleware } from "./middlewares/arcjet.middleware.js";
+import job from "./config/cron.js";
 
 const PORT = ENV.PORT || 8081;
 
 const app = express();
+if (process.env.NODE_ENV === "production") job.start();
 
 // middlewares
 app.use(cors());
@@ -25,7 +27,7 @@ app.use(arcjetMiddleware);
 
 // routes
 app.get("/", (req, res) => {
-  res.send("<h1>X Native Clone</h1>");
+  res.json({ health: "OK" });
 });
 
 app.use("/api/users", userRoutes);
