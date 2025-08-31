@@ -12,30 +12,115 @@ export const getUserProfile = asyncHandler(async (req, res) => {
 });
 
 export const updateProfile = asyncHandler(async (req, res) => {
-  const { userId } = getAuth(req);
+  // const { userId } = getAuth(req);
+  const userId = req.userId;
 
-  const user = await User.findByIdAndUpdate({ clerkId: userId }, req.body, {
-    new: true,
-  });
+  // const user = await User.findByIdAndUpdate({ clerkId: userId }, req.body, {
+  //   new: true,
+  // });
+  const user = await User.findOneAndUpdate(
+    { clerkId: userId }, // filter by Clerk ID
+    req.body,
+    { new: true } // return updated document
+  );
 
   if (!user) return res.status(404).json({ error: "User not found" });
 
   res.status(200).json({ user });
 });
 
+// export const syncUser = asyncHandler(async (req, res) => {
+//   const { userId } = getAuth(req);
+//   console.log("Decoded Clerk userId:", userId);
+//   console.log("Incoming header:", req.headers.authorization);
+
+//   const existingUser = await User.findOne({ clerkId: userId });
+//   if (existingUser) {
+//     return res
+//       .status(200)
+//       .json({ user: existingUser, message: "User already exists" });
+//   }
+
+//   const clerkUser = await clerkClient.users.getUser(userId);
+
+//   const userData = {
+//     clerkId: userId,
+//     email: clerkUser.emailAddresses[0].emailAddress,
+//     firstName: clerkUser.firstName || "",
+//     lastName: clerkUser.lastName || "",
+//     username: clerkUser.emailAddresses[0].emailAddress.split("@")[0],
+//     profilePicture: clerkUser.imageUrl || "",
+//   };
+
+//   const user = await User.create(userData);
+//   console.log("Incoming auth header:", req.headers.authorization);
+
+//   res.status(201).json({ user, message: "User created successfully" });
+// });
+
+// export const syncUser = asyncHandler(async (req, res) => {
+//   console.log("➡️ Entered syncUser controller with userId:", req.userId);
+
+//   // const { userId } = getAuth(req);
+//   const userId = req.userId;
+
+//   console.log("Decoded Clerk userId:", userId);
+//   console.log("Incoming header:", req.headers.authorization);
+
+//   const existingUser = await User.findOne({ clerkId: userId });
+//   if (existingUser) {
+//     console.log("Returning existing user:", existingUser._id.toString());
+//     return res.status(200).json({
+//       user: existingUser,
+//       message: "User already exists",
+//     });
+//   }
+
+//   const clerkUser = await clerkClient.users.getUser(userId);
+
+//   const userData = {
+//     clerkId: userId,
+//     email: clerkUser.emailAddresses[0].emailAddress,
+//     firstName: clerkUser.firstName || "",
+//     lastName: clerkUser.lastName || "",
+//     username: clerkUser.emailAddresses[0].emailAddress.split("@")[0],
+//     profilePicture: clerkUser.imageUrl || "",
+//   };
+
+//   const user = await User.create(userData);
+
+//   console.log("Returning new user:", user._id.toString());
+//   return res.status(201).json({
+//     user,
+//     message: "User created successfully",
+//   });
+// });
+
 export const syncUser = asyncHandler(async (req, res) => {
-  const { userId } = getAuth(req);
-  console.log("Decoded Clerk userId:", userId);
-  console.log("Incoming header:", req.headers.authorization);
+  console.log("➡️ Entered syncUser controller");
+
+  const userId = req.userId; // set in protectRoute
+  console.log("✅ Decoded Clerk userId:", userId);
+
+  if (!userId) {
+    console.log("❌ No userId found in req.userId");
+    return res.status(401).json({ message: "Unauthorized - no userId" });
+  }
 
   const existingUser = await User.findOne({ clerkId: userId });
   if (existingUser) {
-    return res
-      .status(200)
-      .json({ user: existingUser, message: "User already exists" });
+    console.log("✅ Returning existing user:", existingUser._id.toString());
+    return res.status(200).json({
+      user: existingUser,
+      message: "User already exists",
+    });
   }
 
+  // If new user, fetch from Clerk
+  console.log("📡 Fetching Clerk user:", userId);
   const clerkUser = await clerkClient.users.getUser(userId);
+
+  console.log("✅ Clerk user fetched:", clerkUser.id);
 
   const userData = {
     clerkId: userId,
@@ -46,14 +131,19 @@ export const syncUser = asyncHandler(async (req, res) => {
     profilePicture: clerkUser.imageUrl || "",
   };
 
+  console.log("📝 Creating new user with:", userData);
   const user = await User.create(userData);
-  console.log("Incoming auth header:", req.headers.authorization);
 
-  res.status(201).json({ user, message: "User created successfully" });
+  console.log("✅ New user created:", user._id.toString());
+  return res.status(201).json({
+    user,
+    message: "User created successfully",
+  });
 });
 
 export const getCurrentUser = asyncHandler(async (req, res) => {
-  const { userId } = getAuth(req);
+  // const { userId } = getAuth(req);
+  const userId = req.userId;
   const user = await User.findOne({ clerkId: userId });
 
   if (!user) return res.status(404).json({ error: "User not found" });
@@ -62,7 +152,8 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 export const followUser = asyncHandler(async (req, res) => {
-  const { userId } = getAuth(req);
+  // const { userId } = getAuth(req);
+  const userId = req.userId;
   // const { userId } = req.auth;
   const { targetUserId } = req.params;
 

@@ -10,17 +10,20 @@ import postRoutes from "./routes/post.route.js";
 import commentRoutes from "./routes/comment.route.js";
 import notificationRoutes from "./routes/notification.route.js";
 import { arcjetMiddleware } from "./middlewares/arcjet.middleware.js";
+import job from "./config/job.js";
 
 const PORT = ENV.PORT || 8081;
 
 const app = express();
 
+if (process.env.NODE_ENV === "production") job.start();
+
 // middlewares
-app.use(clerkMiddleware());
 app.use(cors());
-app.use(logger);
+app.use(clerkMiddleware());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(logger);
 app.use(arcjetMiddleware);
 
 // routes

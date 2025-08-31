@@ -160,20 +160,35 @@ export const useApiClient = (): AxiosInstance => {
 
 // userApi endpoints
 export const userApi = {
-  syncUser: async (api: AxiosInstance) => {
+  // syncUser: async (api: AxiosInstance) => {
+  //   try {
+  //     const response = await api.post("/users/sync");
+  //     console.log("✅ Synced user:", response.data); // <-- access .data
+  //     return response.data; // <-- send only data to caller
+  //   } catch (err: any) {
+  //     console.error(
+  //       "❌ Sync error:",
+  //       err.response?.status,
+  //       err.response?.data || err.message
+  //     );
+  //     throw err;
+  //   }
+  // },
+
+
+useEffect(() => {
+  const sync = async () => {
     try {
-      const response = await api.post("/users/sync");
-      console.log("✅ Synced user:", response.data); // <-- access .data
-      return response.data; // <-- send only data to caller
-    } catch (err: any) {
-      console.error(
-        "❌ Sync error:",
-        err.response?.status,
-        err.response?.data || err.message
-      );
-      throw err;
+      const data = await userApi.syncUser(api);
+      console.log("🙌 Final synced user data in component:", data.user);
+    } catch (err) {
+      console.error("Sync failed:", err);
     }
-  },
+  };
+
+  sync();
+}, []);
+
 
   getCurrentUser: async (api: AxiosInstance) => {
     try {
