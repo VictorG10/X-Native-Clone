@@ -12,7 +12,7 @@ import notificationRoutes from "./routes/notification.route.js";
 import { arcjetMiddleware } from "./middlewares/arcjet.middleware.js";
 import job from "./config/cron.js";
 
-const PORT = ENV.PORT || 8081;
+const PORT = process.env.PORT || 8081;
 
 const app = express();
 if (process.env.NODE_ENV === "production") job.start();
@@ -44,12 +44,11 @@ app.use((err, req, res, next) => {
 });
 
 connectDB()
-  .then(
-    () =>
-      ENV.NODE_ENV !== "production" &&
-      app.listen(PORT, () => {
-        console.log(`Server is running on Port:${PORT}`);
-      })
+  .then(() =>
+    // ENV.NODE_ENV !== "production" &&
+    app.listen(PORT, () => {
+      console.log(`Server is running on Port:${PORT}`);
+    })
   )
   .catch((err) => {
     console.error("Failed to connect to DB. Exiting...", err);
